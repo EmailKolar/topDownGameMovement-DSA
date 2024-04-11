@@ -1,0 +1,32 @@
+body {
+    background-color: #888;
+    color: #8d8;
+    font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+      "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}
+
+#gamefield{
+    border: 1px solid chartreuse;
+    width: fit-content;
+    display: grid;
+}
+
+#background {
+    grid-area: 1 / 1;
+    width: calc(16* 32px);
+    height: calc(16* 32px);
+}
+#items {
+    grid-area: 1 / 1;
+}
+
+#characters {
+    grid-area: 1 / 1;
+}
+#player {
+    width: 36px;
+    aspect-ratio: 16/20;
+    background-image: url('images/characters/Character 7.png');
+    background-size: 400% 400%;
+    image-rendering: pixelated;
+}
