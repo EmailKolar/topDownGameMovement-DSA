@@ -71,23 +71,41 @@ function keyUp(event){
   function movePlayer(deltaTime){
     player.moving = false;
 
+    const newPos = {
+        x: player.x,
+        y: player.y
+    }
+
     if(controls.left){
         player.moving = true;
         player.direction = "left";
-        player.x -= player.speed * deltaTime;
+        newPos.x -= player.speed * deltaTime;
     }else if(controls.right){
         player.moving = true;
         player.direction = "right";
-        player.x += player.speed * deltaTime;
+        newPos.x += player.speed * deltaTime;
     }
     if(controls.up){
         player.moving = true;
         player.direction = "up";
-        player.y -= player.speed * deltaTime;
+        newPos.y -= player.speed * deltaTime;
     }else if(controls.down){
         player.moving = true;
         player.direction = "down";
-        player.y += player.speed * deltaTime;
+        newPos.y += player.speed * deltaTime;
+    }
+
+    if(canMoveTo(newPos)){
+        player.x = newPos.x;
+        player.y = newPos.y;
+    }
+  }
+
+  function canMoveTo(pos){
+    if(pos.x<0 || pos.y < 0 || pos.x>480 || pos.y > 466){
+        return false;
+    }else{
+        return true;
     }
   }
 
