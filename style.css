@@ -44,6 +44,9 @@ body {
 .tile.floor_planks {
     background-image: url("images/tiles/floor_planks.png");
 }
+.tile.tree {
+    background-image: url("images/tiles/tree.png");
+}
 
 #items {
     grid-area: 1 / 1;
