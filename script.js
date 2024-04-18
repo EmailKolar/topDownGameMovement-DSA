@@ -11,8 +11,8 @@ function start() {
 
 //MODEL***************¨
 const player = {
-    x: 0,
-    y: 0,
+    x: 600,
+    y: 100,
     regX: 17,
     regY: 24,
     hitbox: {
