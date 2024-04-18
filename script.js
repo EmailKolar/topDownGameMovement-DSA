@@ -218,12 +218,13 @@ function keyUp(event){
     const tileType = getTileAtCoord({row,col});
     switch(tileType){
         case 0:
-        case 1:
+        case 5:
         case 3:
+        case 4:
             return true;
             break;
         case 2: 
-        case 5:
+        case 1:
             return false;
             break;
     }
