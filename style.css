@@ -50,6 +50,26 @@ body {
 
 #items {
     grid-area: 1 / 1;
+    display: grid;
+    position: relative;
+    grid-template-columns: repeat(var(--GRID_WIDTH), var(--TILE_SIZE));
+    grid-template-rows: repeat(var(--GRID_HEIGHT), var(--TILE_SIZE));
+}
+.item {
+    width: var(--TILE_SIZE);
+    height: var(--TILE_SIZE);
+    aspect-ratio: 1 / 1;
+    background-image: 100%;
+    background-size: cover;
+    image-rendering: pixelated;
+    
+
+    grid-area: calc(var(--row) + 1) / calc(var(--col) + 1);
+}
+
+
+.item.gold{
+    background-image: url("images/items/gold.png");
 }
 
 #characters {
@@ -114,6 +134,24 @@ body {
     to {
         background-position: -400% -300%;
     }
+}
+
+
+@keyframes slideUpFadeOut {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-100%);
+    }
+}
+
+.take {
+    animation: slideUpFadeOut 1s forwards; /* Run the animation once */
+    animation-iteration-count: 1; /* Set the iteration count to 1 */
+    animation-fill-mode: forwards; /* Retain the final state of the animation */
 }
 
 

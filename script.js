@@ -3,6 +3,7 @@ window.addEventListener("load", start);
 function start() {
     console.log('yoyoyo');
     createTiles();
+    createItems();
     displayTiles()
     document.addEventListener("keydown",keyDown)
     document.addEventListener("keyup",keyUp)
@@ -47,9 +48,34 @@ const tiles = [
     [6,3,3,3,6,3,6,6,6,6,6,6,3,3,3,3,0,0,0,0],
     [6,3,3,3,3,3,6,6,6,6,6,6,6,6,6,6,0,0,0,0],
     [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,0,0,0,0],
-    
-    
 ]
+
+const itemsGrid = [
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+
+]
+const visualItemsGrid = [];
+
+
 const GRID_WIDTH = tiles[0].length;
 const GRID_HEIGHT = tiles.length;
 const TILE_SIZE = 32;
@@ -71,12 +97,24 @@ function posFromCoord({row,col}){
     
 }
 
-function getTilesUnderPlayer(player){
+function getTileCoordsUnder(player){
     const tiles = [];
 
-    const topLeft = {x: player.x- player.regX + player.hitbox.x, y:player.y}
-    const topRight = {x: player.x- player.regX + player.hitbox.x + player.hitbox.x, y:player.y}
+    const topLeft = coordFromPos({ x: player.x - player.regX + player.hitbox.x, y: player.y + player.hitbox.y });
+    const topRight = coordFromPos({ x: player.x - player.regX + player.hitbox.x + player.hitbox.w, y: player.y + player.hitbox.y });
+    const bottomLeft = coordFromPos({ x: player.x - player.regX + player.hitbox.x, y: player.y + player.hitbox.y + player.hitbox.h });
+    const bottomRight = coordFromPos({ x: player.x - player.regX + player.hitbox.x + player.hitbox.w, y: player.y + player.hitbox.y + player.hitbox.h });
+
+    tiles.push(topLeft, topRight, bottomLeft, bottomRight);
+
+    return tiles;
 }
+
+
+function getItemsUnderPlayer() {
+    return getTileCoordsUnder(player).filter(({row,col}) => itemsGrid[row][col]!= 0);
+}
+
 
 //VIEW******************
 function displayPlayerAtPosition(){
@@ -101,6 +139,7 @@ function displayPlayerAnimation(){
 }
 
 function createTiles(){
+    const gamefield = document.querySelector("#gamefield");
 
     const background = document.querySelector("#background");
 
@@ -113,11 +152,47 @@ function createTiles(){
         }
         
     }
-    background.style.setProperty("--GRID_WIDTH",GRID_WIDTH)
-    background.style.setProperty("--GRID_HEIGHT",GRID_HEIGHT)
-    background.style.setProperty("--TILE_SIZE",TILE_SIZE+"px")
+    gamefield.style.setProperty("--GRID_WIDTH",GRID_WIDTH)
+    gamefield.style.setProperty("--GRID_HEIGHT",GRID_HEIGHT)
+    gamefield.style.setProperty("--TILE_SIZE",TILE_SIZE+"px")
 
 }
+
+function createItems(){
+    const visualItems = document.querySelector("#items");
+
+    for(let row = 0; row < GRID_HEIGHT; row++){
+        visualItemsGrid[row] = [];
+        for(let col = 0; col < GRID_WIDTH; col++){
+            const modelItem = itemsGrid[row][col];
+            if(modelItem !== 0){
+                const visualItem = document.createElement("div");
+                visualItem.classList.add("item");
+                visualItem.classList.add("gold");
+                visualItem.style.setProperty("--row", row);
+                visualItem.style.setProperty("--col", col);
+                visualItems.append(visualItem)
+                visualItemsGrid[row][col] = visualItem;
+            }
+        }
+    }
+
+}
+
+function takeItem(coords){
+    const itemValue = itemsGrid[coords.row][coords.col];
+    if(itemValue !== 0){
+        itemsGrid[coords.row][coords.col] = 0;
+
+        const visualItem = visualItemsGrid[coords.row][coords.col];
+        visualItem.classList.add("take");
+
+    }
+
+}
+
+
+
 function displayTiles(){
     const visualTiles = document.querySelectorAll("#background .tile")
     for (let row = 0; row < GRID_HEIGHT; row++) {
@@ -154,7 +229,8 @@ const controls = {
     left: false,
     right: false,
     up: false,
-    down: false
+    down: false,
+    use: false,
 }
 function keyDown(event){
     console.log(event.key);
@@ -164,6 +240,7 @@ function keyDown(event){
       case "ArrowRight":controls.right = true; break;
       case "ArrowUp":controls.up = true;break;
       case "ArrowDown": controls.down = true; break;
+      case "e": controls.use = true; break;
     }
     
   
@@ -175,6 +252,7 @@ function keyUp(event){
       case "ArrowRight": controls.right = false; break;
       case "ArrowUp": controls.up = false; break;
       case "ArrowDown": controls.down = false; break;
+      case "e": controls.use = false; break;
     }
   }
   function movePlayer(deltaTime){
@@ -241,9 +319,19 @@ function tick(timestamp){
 
     movePlayer(deltaTime);
 
+    checkForItems();
+
     displayPlayerAtPosition();
     displayPlayerAnimation();
     showDebugging();
+}
+
+function checkForItems(){
+    const items = getItemsUnderPlayer();
+    if(items.length > 0 && controls.use){
+        console.log('HELLO');
+        items.forEach(takeItem)
+    }
 }
 
 
