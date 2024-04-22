@@ -17,9 +17,9 @@ const player = {
     regX: 17,
     regY: 24,
     hitbox: {
-        x: 4,
-        y: 7,
-        w: 10,
+        x: 5,
+        y: 23,
+        w: 25,
         h: 17
     },
     speed: 10,
@@ -97,13 +97,21 @@ function posFromCoord({row,col}){
     
 }
 
-function getTileCoordsUnder(player){
+function getTileCoordsUnder(player, newPos={x:player.x,y:player.y}){
     const tiles = [];
 
-    const topLeft = coordFromPos({ x: player.x - player.regX + player.hitbox.x, y: player.y + player.hitbox.y });
-    const topRight = coordFromPos({ x: player.x - player.regX + player.hitbox.x + player.hitbox.w, y: player.y + player.hitbox.y });
-    const bottomLeft = coordFromPos({ x: player.x - player.regX + player.hitbox.x, y: player.y + player.hitbox.y + player.hitbox.h });
-    const bottomRight = coordFromPos({ x: player.x - player.regX + player.hitbox.x + player.hitbox.w, y: player.y + player.hitbox.y + player.hitbox.h });
+    const topLeft = coordFromPos({ x: newPos.x - player.regX + player.hitbox.x, y: newPos.y -player.regY + player.hitbox.y });
+   /* const topRight = coordFromPos({x: topLeft.x + player.hitbox.w, y: topLeft.y})
+    const bottomLeft = coordFromPos({x: topLeft.x, y: topLeft.y + player.hitbox.h})
+    const bottomRight = coordFromPos({x: topRight.x, y: topRight.y + player.hitbox.h})
+    */
+   
+    const topRight = coordFromPos({ x: newPos.x - player.regX + player.hitbox.x + player.hitbox.w, y: newPos.y -player.regY + player.hitbox.y });
+
+    const bottomLeft = coordFromPos({ x: newPos.x - player.regX + player.hitbox.x, y: newPos.y - player.regY + player.hitbox.y + player.hitbox.h });
+    const bottomRight = coordFromPos({ x: newPos.x - player.regX + player.hitbox.x + player.hitbox.w, y: newPos.y - player.regY + player.hitbox.y + player.hitbox.h });
+
+    
 
     tiles.push(topLeft, topRight, bottomLeft, bottomRight);
 
@@ -255,7 +263,7 @@ function keyUp(event){
       case "e": controls.use = false; break;
     }
   }
-  function movePlayer(deltaTime){
+function movePlayer(deltaTime){
     player.moving = false;
 
     const newPos = {
@@ -282,14 +290,20 @@ function keyUp(event){
         newPos.y += player.speed * deltaTime;
     }
 
-    if(canMoveTo(newPos)){
+    if(canMovePlayerToPos(player,newPos)){
         player.x = newPos.x;
         player.y = newPos.y;
     }
   }
 
-  function canMoveTo(pos){
-    const {row,col} = coordFromPos(pos);
+  function canMovePlayerToPos(player, pos){
+    const coords = getTileCoordsUnder(player,pos);
+
+    return coords.every(canMoveTo)
+  }
+
+  function canMoveTo({row,col}){
+   // const {row,col} = coordFromPos(pos);
     if(row<0 || row >= GRID_HEIGHT || col < 0 || col >= GRID_WIDTH){
         return false;
     }
@@ -341,11 +355,13 @@ function showDebugging(){
     showDebugTileUnderPlayer();
     showDebugPlayerRect();
     showDebugPlayerRegistrationPoint();
+    showHitbox();
 }
 
 let lastPlayercoord = {row:0, col:0};
+let highlightedTiles = [];
 
-function showDebugTileUnderPlayer(){
+function showDebugTileUnderPlayerO(){
     const coord = coordFromPos(player);
 
     if(coord.row != lastPlayercoord.row || coord.col != lastPlayercoord.col){
@@ -354,6 +370,14 @@ function showDebugTileUnderPlayer(){
     }
 
     lastPlayercoord = coord;
+}
+
+function showDebugTileUnderPlayer(){
+    highlightedTiles.forEach(unhighlightTile)
+    const tilesUnderPlayer = getTileCoordsUnder(player);
+    tilesUnderPlayer.forEach(highlightTile)
+    highlightedTiles = tilesUnderPlayer;
+
 }
 
 function showDebugPlayerRect(){
@@ -382,4 +406,16 @@ function unhighlightTile ({row,col}){
     const visualTile = visualTiles[row*GRID_WIDTH+col]
     visualTile.classList.remove("highlight")
     
+}
+function showHitbox(){
+    const visualPLayer = document.querySelector("#player");
+    
+    visualPLayer.classList.add("show-hitbox");
+    
+
+    visualPLayer.style.setProperty("--hitboxW", player.hitbox.w +"px")
+    visualPLayer.style.setProperty("--hitboxH", player.hitbox.h +"px")
+    visualPLayer.style.setProperty("--hitboxX", player.hitbox.x +"px")
+    visualPLayer.style.setProperty("--hitboxY", player.hitbox.y +"px")
+
 }
